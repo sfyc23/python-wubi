@@ -58,3 +58,4 @@ def single_seg(chars):
         else:
             s += c
     return res
+

@@ -1,5 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from enum import IntEnum, unique
-# from __future__ import unicode_literals
 import os
 import re
 
@@ -12,6 +14,7 @@ WUBI_86_DICT = wubi_dict.wubi_86_dict
 if not os.environ.get('PYWUBI_NO_DICT_COPY'):
     WUBI_86_DICT = WUBI_86_DICT.copy()
 
+# 能匹配的中文编码
 RE_HANS = re.compile(
     r'^(?:['
     r'\u3007'  # 〇

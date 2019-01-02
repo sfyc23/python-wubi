@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+'''
+86 版五笔编码，总共 21004 个汉字，其中包括一个特殊的 〇
+字典，key 表示 unicode, value = 表示五笔编码。如果有多个编码，则用','分隔。编码的排序是按长度。
+'''
+# Warning: Auto-generated file, don't edit.
 wubi_86_dict = {
     0x3007: 'llll',
     0x4E00: 'ggll,ggl,g',
