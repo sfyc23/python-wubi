@@ -178,8 +178,8 @@ I am currently requesting account recovery for the PyPI project/package "pywubi"
 
 This note is added to help PyPI administrators verify that I still control the source repository associated with the package.
 
-GitHub profile: https://github.com/sfyc23
-PyPI project: https://pypi.org/project/pywubi/
+GitHub profile: https://github.com/sfyc23  
+PyPI project: https://pypi.org/project/pywubi/  
 Date: 2026-03-30
 
 ## License
