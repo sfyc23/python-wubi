@@ -1,20 +1,19 @@
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "pywubi"
 version = "0.2.0"
 description = "汉字五笔转换模块/工具"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
 requires-python = ">=3.8"
 authors = [
     {name = "sfyc23", email = "sfyc23@gmail.com"},
 ]
 keywords = ["wubi", "五笔", "chinese", "encoding"]
 classifiers = [
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",

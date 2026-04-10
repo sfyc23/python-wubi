@@ -14,6 +14,7 @@
 - 词组转码：按五笔词组规则（二字、三字、四字及以上）生成编码
 - 多编码查询：返回汉字的所有可能编码
 - 反查功能：根据五笔编码反查对应汉字
+- 模糊反查：不确定的字根用 `z` 代替，模糊查询猜字
 - 简码查询：获取汉字的最短简码及简码级别
 - 混合文本：自动分割汉字与非汉字，标点符号原样保留
 - 零依赖：无任何第三方依赖
@@ -107,6 +108,28 @@ from pywubi import reverse_lookup
 reverse_lookup('trnt')  # ['我']
 reverse_lookup('q')     # ['我']
 reverse_lookup('ggll')  # ['一']
+```
+
+### `fuzzy_reverse_lookup(code, limit=10)`
+
+根据五笔编码模糊查询汉字，不确定的字根可用 `z` 代替。
+
+五笔 86 版编码仅使用 `a`-`y`，`z` 键天然空闲，可作为通配符匹配任意字根。输入不含 `z` 时等同于精确反查；输入长度决定匹配编码长度。
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `code` | `str` | — | 五笔编码，不确定的位置用 `z`/`Z` 代替 |
+| `limit` | `int` | `10` | 最大返回数量，`0` 表示不限制 |
+
+**返回**: `list[tuple[str, str]]` — `[(汉字, 匹配编码), ...]`，按编码字母序排列
+
+```python
+from pywubi import fuzzy_reverse_lookup
+
+fuzzy_reverse_lookup('vz')       # [('姑', 'vd'), ('灵', 'vo'), ...]
+fuzzy_reverse_lookup('zzzg')     # 只知道末码是 g，返回末码为 g 的四码字
+fuzzy_reverse_lookup('trnt')     # 无 z，退化为精确反查
+fuzzy_reverse_lookup('zz', limit=5)  # 限制返回 5 条
 ```
 
 ### `brief_code(char)`

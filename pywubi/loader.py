@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections import defaultdict
 from importlib import resources
 from typing import Optional
@@ -64,6 +65,38 @@ def reverse_lookup(code: str) -> list[str]:
     :return: 对应的汉字列表，未找到返回空列表
     """
     return get_reverse_dict().get(code.lower(), [])
+
+
+def fuzzy_reverse_lookup(code: str, limit: int = 10) -> list[tuple[str, str]]:
+    """根据五笔编码模糊查询汉字，不确定的字根可用 z 代替。
+
+    支持精确查询与模糊查询：输入不含 z 时等同于精确反查，
+    含 z 时将其作为通配符匹配任意字根键（a-y）。
+    输入长度决定匹配编码长度，如 'vz' 只匹配 2 码编码。
+
+    :param code: 五笔编码，不确定的位置用 z/Z 代替
+    :param limit: 最大返回数量，默认 10，设为 0 表示不限制
+    :return: [(汉字, 匹配到的编码), ...] 按编码字母序排列
+    """
+    if not code:
+        return []
+    code = code.lower()
+    if 'z' not in code:
+        chars = reverse_lookup(code)
+        return [(c, code) for c in chars][:limit] if limit > 0 else [(c, code) for c in chars]
+    pattern = ''.join('[a-y]' if c == 'z' else re.escape(c) for c in code)
+    regex = re.compile(f'^{pattern}$')
+    results: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    rev = get_reverse_dict()
+    for key, chars in rev.items():
+        if regex.match(key):
+            for char in chars:
+                if char not in seen:
+                    seen.add(char)
+                    results.append((char, key))
+    results.sort(key=lambda x: x[1])
+    return results[:limit] if limit > 0 else results
 
 
 def brief_code(char: str) -> Optional[str]:

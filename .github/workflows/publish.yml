@@ -1,0 +1,61 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Verify tag matches project version
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          import pathlib
+          import tomllib
+
+          pyproject = pathlib.Path("pyproject.toml").read_text(encoding="utf-8")
+          version = tomllib.loads(pyproject)["project"]["version"]
+          tag = os.environ["GITHUB_REF_NAME"]
+          expected = f"v{version}"
+
+          if tag != expected:
+              raise SystemExit(
+                  f"Refusing to publish: tag {tag!r} does not match expected {expected!r}"
+              )
+
+          print(f"Publishing version {version} from tag {tag}")
+          PY
+
+      - name: Install build dependencies
+        run: python -m pip install --upgrade pip build twine
+
+      - name: Run tests
+        run: python -m pytest -q
+
+      - name: Build distributions
+        run: python -m build
+
+      - name: Check distribution metadata
+        run: python -m twine check dist/*
+
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}

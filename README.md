@@ -14,6 +14,7 @@ A Python library for converting Chinese characters to [Wubi](https://en.wikipedi
 - **Phrase encoding** — generate codes following Wubi phrase rules (2-char, 3-char, 4+ char)
 - **Multi-code query** — return all possible encodings for a character
 - **Reverse lookup** — find characters by Wubi code
+- **Fuzzy reverse lookup** — use `z` in place of unknown radicals to guess characters
 - **Brief code query** — get the shortest code and its level (1st / 2nd / 3rd / full)
 - **Mixed text** — automatically split Chinese and non-Chinese; punctuation is preserved as-is
 - **Zero dependencies** — no third-party packages required
@@ -107,6 +108,28 @@ from pywubi import reverse_lookup
 reverse_lookup('trnt')  # ['我']
 reverse_lookup('q')     # ['我']
 reverse_lookup('ggll')  # ['一']
+```
+
+### `fuzzy_reverse_lookup(code, limit=10)`
+
+Fuzzy reverse-lookup characters by Wubi code; use `z` for unknown radical keys.
+
+Wubi 86 only uses keys `a`-`y`; `z` is naturally unused and serves as a wildcard matching any radical key. When the input contains no `z`, it behaves the same as an exact reverse lookup. Input length determines the matched code length.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `code` | `str` | — | Wubi code; use `z`/`Z` for unknown positions |
+| `limit` | `int` | `10` | Max results to return; `0` for unlimited |
+
+**Returns**: `list[tuple[str, str]]` — `[(character, matched_code), ...]` sorted by code
+
+```python
+from pywubi import fuzzy_reverse_lookup
+
+fuzzy_reverse_lookup('vz')       # [('姑', 'vd'), ('灵', 'vo'), ...]
+fuzzy_reverse_lookup('zzzg')     # only last key is 'g', find all 4-code chars ending in g
+fuzzy_reverse_lookup('trnt')     # no z — degrades to exact reverse lookup
+fuzzy_reverse_lookup('zz', limit=5)  # limit to 5 results
 ```
 
 ### `brief_code(char)`

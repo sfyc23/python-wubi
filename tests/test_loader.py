@@ -3,7 +3,7 @@
 
 from pywubi.loader import (
     get_wubi_dict, get_reverse_dict,
-    lookup, reverse_lookup,
+    lookup, reverse_lookup, fuzzy_reverse_lookup,
     brief_code, brief_level,
 )
 
@@ -74,6 +74,63 @@ class TestReverseLookup:
         d1 = get_reverse_dict()
         d2 = get_reverse_dict()
         assert d1 is d2
+
+
+class TestFuzzyReverseLookup:
+    """fuzzy_reverse_lookup 容错反查测试"""
+
+    def test_single_wildcard(self):
+        results = fuzzy_reverse_lookup('vz')
+        chars = [r[0] for r in results]
+        assert len(results) > 0
+        assert all(len(code) == 2 for _, code in results)
+        assert all(code.startswith('v') for _, code in results)
+
+    def test_wildcard_at_first_position(self):
+        results = fuzzy_reverse_lookup('zq')
+        assert len(results) > 0
+        assert all(len(code) == 2 for _, code in results)
+        assert all(code.endswith('q') for _, code in results)
+
+    def test_multiple_wildcards(self):
+        results = fuzzy_reverse_lookup('zzzg')
+        assert len(results) > 0
+        assert all(len(code) == 4 for _, code in results)
+        assert all(code.endswith('g') for _, code in results)
+
+    def test_no_wildcard_degrades_to_exact(self):
+        results = fuzzy_reverse_lookup('trnt')
+        chars = [r[0] for r in results]
+        assert '我' in chars
+
+    def test_case_insensitive(self):
+        assert fuzzy_reverse_lookup('VZ') == fuzzy_reverse_lookup('vz')
+
+    def test_empty_input(self):
+        assert fuzzy_reverse_lookup('') == []
+
+    def test_limit(self):
+        results = fuzzy_reverse_lookup('zz', limit=3)
+        assert len(results) <= 3
+
+    def test_limit_zero_returns_all(self):
+        limited = fuzzy_reverse_lookup('zz', limit=5)
+        unlimited = fuzzy_reverse_lookup('zz', limit=0)
+        assert len(unlimited) >= len(limited)
+
+    def test_results_sorted_by_code(self):
+        results = fuzzy_reverse_lookup('vz')
+        codes = [r[1] for r in results]
+        assert codes == sorted(codes)
+
+    def test_result_is_tuple_pair(self):
+        results = fuzzy_reverse_lookup('vz')
+        for item in results:
+            assert isinstance(item, tuple)
+            assert len(item) == 2
+
+    def test_unknown_pattern_returns_empty(self):
+        assert fuzzy_reverse_lookup('99') == []
 
 
 class TestBriefCode:

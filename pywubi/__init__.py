@@ -1,5 +1,5 @@
 from .core import wubi, single_wubi, combine_wubi
-from .loader import reverse_lookup, brief_code, brief_level, lookup
+from .loader import reverse_lookup, fuzzy_reverse_lookup, brief_code, brief_level, lookup
 
 # 向后兼容旧 API 名称
 conbin_wubi = combine_wubi
