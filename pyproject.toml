@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pywubi"
-version = "0.2.0"
+version = "0.3.0"
 description = "汉字五笔转换模块/工具"
 readme = "README.md"
 license = "MIT"
